@@ -2,11 +2,15 @@
     "cSpell.language": "en,es-ES",
     "cSpell.words": [
         "arange",
+        "basicstyle",
         "fftshift",
+        "labelformat",
         "linewidth",
         "matplotlib",
+        "numpy",
         "pyplot",
-        "scipy"
+        "scipy",
+        "xlim"
     ],
     "python.formatting.provider": "black"
 }
