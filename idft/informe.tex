@@ -52,71 +52,69 @@
 \makeatother
 \newpage
 
-\section{Parte 1}
+\section{Resolución}
 
 \begin{lstlisting}[
     basicstyle=\tiny, %or \small or \footnotesize etc.
     ]
 import numpy as np
 import matplotlib.pyplot as plt
-from muestras import muestras as signal
 
 
 if __name__ == "__main__":
-    fs = 200
-    N = 100
-    M = 100 * N
-    td = np.arange(start=0, stop=N / fs, step=1 / fs)
-
     fig = plt.figure(1)
-
-    sig_sigAxe = fig.add_subplot(2, 2, 1)
-    sig_sigAxe.set_xlabel("n")
-    sig_sigAxe.set_ylabel("signal(n)")
-    sig_sigAxe.grid(True)
-    sig_sigAxe.plot(td, signal, "r-")
-
-    # FFT
-    sig_fft = np.abs(1 / N * np.fft.fft(signal)) ** 2
-    sig_fftAxe = fig.add_subplot(2, 2, 2)
-    (sig_fftLn,) = plt.plot([], [], "b-", linewidth=1)
-    sig_fftAxe.set_ylim(0, np.max(sig_fft) + 0.05)
-    sig_fftAxe.set_xlim(0, fs / 2)
-    sig_fftAxe.set_xlabel("k")
-    sig_fftAxe.set_ylabel("fft(signal(n))")
-    sig_fftAxe.grid(True)
-    sig_fftLn.set_data((fs / N) * fs * td, sig_fft)
-
-    td_mod = np.arange(0, (M + N) / fs, 1 / fs)
-
-    zero_padding = np.zeros(M)
-    signal_mod = np.concatenate([signal, zero_padding], axis=None)
-    sig_mod_sigAxe = fig.add_subplot(2, 2, 3)
-    sig_mod_sigAxe.set_xlabel("n")
-    sig_mod_sigAxe.set_ylabel("signal_mod(n)")
-    sig_mod_sigAxe.grid(True)
-    sig_mod_sigAxe.plot(td_mod, signal_mod, "r-")
-
-    # FFT
-    sig_mod_fft = np.abs(1 / (N + M) * np.fft.fft(signal_mod)) ** 2
-    sig_mod_fftAxe = fig.add_subplot(2, 2, 4)
-    (sig_mod_fftLn,) = plt.plot([], [], "b-", linewidth=1)
-    sig_mod_fftAxe.set_ylim(0, np.max(sig_mod_fft))
-    sig_mod_fftAxe.set_xlim(0, fs / 2)
-    sig_mod_fftAxe.set_xlabel("k")
-    sig_mod_fftAxe.set_ylabel("fft(signal_mod(n))")
-    sig_mod_fftAxe.grid(True)
-    sig_mod_fftLn.set_data((fs / (N + M)) * fs * td_mod, sig_mod_fft)
+    fs = 1
+    sig_f_in = np.load("./fft_hjs.npy")[::1]
+    sig_f_shifted = np.fft.fftshift(sig_f_in)
+    N = len(sig_f_in)
+    exclude_points = 0
+    Nmod = N - exclude_points
+    inf_lim = int(exclude_points / 2)
+    sup_lim = int(N - exclude_points / 2)
+    n = np.arange(-N / 2, N / 2, 1) / fs
+    sig_f_trunc = np.fft.ifftshift(sig_f_shifted[inf_lim:sup_lim])
+    fftAxe = fig.add_subplot(2, 2, 1)
+    fftAxe.set_title("Espectro en frecuencia")
+    fftAxe.grid(True)
+    fftAxe.plot(n, np.real(sig_f_shifted), "b-")
+    fftAxe.plot(n, np.imag(sig_f_shifted), "r-")
+    fftAxe.fill_between(
+        [(-N // 2 + inf_lim), (sup_lim - N / 2)],
+        200,
+        -200,
+        facecolor="yellow",
+        alpha=0.2,
+    )
+    n = np.arange(0, Nmod, 1) / fs
+    sig_t = np.fft.ifft(sig_f_trunc)
+    ifftAxe = fig.add_subplot(2, 2, 2)
+    ifftAxe.set_title("Senal en tiempo")
+    ifftAxe.grid(True)
+    ifftAxe.plot(n, np.real(sig_t), "b-")
+    ifftAxe.plot(n, np.imag(sig_t), "r-")
+    ifft2d = fig.add_subplot(2, 2, 3)
+    ifft2d.set_title("IDFT en 2D")
+    ifft2d.grid(True)
+    ifft2d.plot(np.imag(sig_t), np.real(sig_t), "g-")
 
     plt.show()
 \end{lstlisting}
 
 En la figura \ref{fig:ifdt} se puede observar el funcionamiento del script.
 
+La imagen se identifica como Homero y dado que el espectro en frecuencia tiene casi toda su energía en el rango de 0 a 100 Hz se podrían tomar 200 muestras y aún así se podría ver a Homero.
+
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=\textwidth]{img/ifdt.png}
-	\caption{Imagen de las señales.}
+	\includegraphics[width=\textwidth]{img/homero.png}
+	\caption{Imagen de las señal.}
+	\label{fig:ifdt}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{img/homero200.png}
+	\caption{Imagen de las señal con fs de 200 Hz.}
 	\label{fig:ifdt}
 \end{figure}
 
