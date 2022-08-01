@@ -1,0 +1,123 @@
+\documentclass[
+    11pt,
+    spanish,
+	a4paper
+]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{authoraftertitle}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{verbatim}
+\usepackage{listings}
+\captionsetup[table]{labelformat=empty}
+
+\def\doctype{Trabajo práctico}
+\title{Transformada de Fourier}
+\author{Gonzalo Nahuel Vaca}
+
+\begin{document}
+
+\makeatletter
+\begin{titlepage}
+	\begin{center}
+		\vspace*{1cm}
+		
+		\Huge
+		\textbf{\doctype}
+		\vspace{0.5cm}
+    
+		\LARGE
+		\@title
+		\vspace{0.5cm}
+    
+		\textbf{Procesamiento Digital de Señales (fundamentos)}
+		
+		\vspace{1.5cm}
+		
+		\textbf{\@author}
+
+		\vspace{1.5cm}
+
+		\includegraphics[width=0.8\textwidth]{img/logoFIUBA.pdf}
+		
+		\vfill
+		Maestría en Sistemas Embebidos\\
+		Universidad de Buenos Aires\\
+		Argentina\\
+		\today
+	\end{center}
+\end{titlepage}
+\makeatother
+\newpage
+
+\section{Parte 1}
+
+\begin{lstlisting}[
+    basicstyle=\tiny, %or \small or \footnotesize etc.
+    ]
+import numpy as np
+import matplotlib.pyplot as plt
+from muestras import muestras as signal
+
+
+if __name__ == "__main__":
+    fs = 200
+    N = 100
+    M = 100 * N
+    td = np.arange(start=0, stop=N / fs, step=1 / fs)
+
+    fig = plt.figure(1)
+
+    sig_sigAxe = fig.add_subplot(2, 2, 1)
+    sig_sigAxe.set_xlabel("n")
+    sig_sigAxe.set_ylabel("signal(n)")
+    sig_sigAxe.grid(True)
+    sig_sigAxe.plot(td, signal, "r-")
+
+    # FFT
+    sig_fft = np.abs(1 / N * np.fft.fft(signal)) ** 2
+    sig_fftAxe = fig.add_subplot(2, 2, 2)
+    (sig_fftLn,) = plt.plot([], [], "b-", linewidth=1)
+    sig_fftAxe.set_ylim(0, np.max(sig_fft) + 0.05)
+    sig_fftAxe.set_xlim(0, fs / 2)
+    sig_fftAxe.set_xlabel("k")
+    sig_fftAxe.set_ylabel("fft(signal(n))")
+    sig_fftAxe.grid(True)
+    sig_fftLn.set_data((fs / N) * fs * td, sig_fft)
+
+    td_mod = np.arange(0, (M + N) / fs, 1 / fs)
+
+    zero_padding = np.zeros(M)
+    signal_mod = np.concatenate([signal, zero_padding], axis=None)
+    sig_mod_sigAxe = fig.add_subplot(2, 2, 3)
+    sig_mod_sigAxe.set_xlabel("n")
+    sig_mod_sigAxe.set_ylabel("signal_mod(n)")
+    sig_mod_sigAxe.grid(True)
+    sig_mod_sigAxe.plot(td_mod, signal_mod, "r-")
+
+    # FFT
+    sig_mod_fft = np.abs(1 / (N + M) * np.fft.fft(signal_mod)) ** 2
+    sig_mod_fftAxe = fig.add_subplot(2, 2, 4)
+    (sig_mod_fftLn,) = plt.plot([], [], "b-", linewidth=1)
+    sig_mod_fftAxe.set_ylim(0, np.max(sig_mod_fft))
+    sig_mod_fftAxe.set_xlim(0, fs / 2)
+    sig_mod_fftAxe.set_xlabel("k")
+    sig_mod_fftAxe.set_ylabel("fft(signal_mod(n))")
+    sig_mod_fftAxe.grid(True)
+    sig_mod_fftLn.set_data((fs / (N + M)) * fs * td_mod, sig_mod_fft)
+
+    plt.show()
+\end{lstlisting}
+
+En la figura \ref{fig:ifdt} se puede observar el funcionamiento del script.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{img/ifdt.png}
+	\caption{Imagen de las señales.}
+	\label{fig:ifdt}
+\end{figure}
+
+\end{document}

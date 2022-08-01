@@ -5,6 +5,7 @@
         "basicstyle",
         "fftshift",
         "figsize",
+        "IDFT",
         "labelformat",
         "linewidth",
         "linspace",
@@ -13,7 +14,9 @@
         "numpy",
         "pyplot",
         "scipy",
-        "xlim"
+        "xlabel",
+        "xlim",
+        "ylabel"
     ],
     "python.formatting.provider": "black"
 }
