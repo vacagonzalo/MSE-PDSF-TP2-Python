@@ -3,4 +3,5 @@ import matplotlib.pyplot as plt
 
 
 if __name__ == "__main__":
-    pass
+    data = np.load('fft_hjs.npy')
+    print(data)
